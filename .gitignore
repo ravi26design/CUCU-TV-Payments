@@ -1,0 +1,6 @@
+.DS_Store
+_preview.html
+
+# local backups / unrelated prototypes — kept out of this repo
+*copy*.html
+Video/

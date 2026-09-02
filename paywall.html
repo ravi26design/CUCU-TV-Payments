@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Unlock Your Child's Potential</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12121a;
+    --muted:#6b7280;
+    --purple:#7c3aed;
+    --purple-soft:#ede9fe;
+    --blue:#3b82f6;
+    --blue-soft:#e0edff;
+    --orange:#fb923c;
+    --amber:#fbbf24;
+    --page:#dbeafe;
+    --card:#ffffff;
+    --hairline:#eef0f5;
+    --radius:22px;
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+  body{
+    margin:0;
+    font-family:"Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:var(--page);
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:24px 16px;
+  }
+
+  /* ---------- phone shell (drops away on real phones) ---------- */
+  .phone{
+    width:100%;
+    max-width:390px;
+    height:min(844px, calc(100vh - 48px));
+    background:var(--card);
+    border-radius:44px;
+    border:10px solid #3d3547;
+    box-shadow:0 30px 70px rgba(40,30,80,.28);
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .statusbar{
+    position:absolute;top:0;left:0;right:0;height:52px;z-index:6;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 30px;font-size:15px;font-weight:800;letter-spacing:.2px;
+    pointer-events:none;
+  }
+  .topscrim{
+    position:absolute;top:0;left:0;right:0;height:96px;z-index:4;
+    pointer-events:none;opacity:0;transition:opacity .25s ease;
+    background:linear-gradient(180deg,#fff 0%,#fff 58%,rgba(255,255,255,0) 100%);
+  }
+  .phone.scrolled .topscrim{opacity:1}
+  .notch{
+    position:absolute;top:11px;left:50%;transform:translateX(-50%);
+    width:120px;height:34px;border-radius:20px;background:#15121c;z-index:7;
+  }
+  .status-icons{display:flex;gap:6px;align-items:center}
+  .status-icons svg{display:block}
+
+  /* ---------- scroll area ---------- */
+  .screen{
+    flex:1;overflow-y:auto;overflow-x:hidden;
+    scrollbar-width:none;
+    display:flex;flex-direction:column;
+  }
+  .screen::-webkit-scrollbar{display:none}
+
+  /* ---------- hero / slider ---------- */
+  .hero{
+    position:relative;
+    flex:0 0 60%;          /* slider fills the top 60% of the screen */
+    min-height:290px;
+    padding:104px 14px 16px;
+    display:flex;flex-direction:column;
+    background:
+      radial-gradient(120% 70% at 12% 6%, rgba(255,255,255,.5) 0%, transparent 52%),
+      linear-gradient(165deg,#BFDCFF 0%, #D3E7FF 52%, #E4F1FF 100%);
+    border-radius:0 0 30px 30px;
+  }
+
+  .slider{flex:1;overflow:hidden;min-height:0;border-radius:20px}
+  .track{display:flex;height:100%;transition:transform .55s cubic-bezier(.45,.05,.2,1)}
+  .slide{flex:0 0 100%;height:100%;display:flex;align-items:center;justify-content:center}
+  .slide img{
+    max-width:100%;max-height:100%;
+    width:auto;height:100%;
+    object-fit:contain;
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(30,64,120,.14);
+    user-select:none;-webkit-user-drag:none;
+  }
+
+  /* --- dots --- */
+  .dots{display:flex;justify-content:center;gap:6px;padding:16px 0 2px}
+  .dots button{
+    width:6px;height:6px;padding:0;border:0;border-radius:99px;
+    background:#9dbde3;cursor:pointer;transition:width .3s ease, background .3s ease;
+  }
+  .dots button.on{width:20px;background:#3B9EFF}
+
+  .back{
+    position:absolute;top:58px;left:16px;z-index:8;
+    width:42px;height:42px;border-radius:50%;
+    background:#fff;border:0;cursor:pointer;
+    box-shadow:0 4px 14px rgba(60,40,120,.16);
+    display:grid;place-items:center;
+    transition:transform .15s ease;
+  }
+  .back:active{transform:scale(.92)}
+
+  /* ---------- content ---------- */
+  .content{padding:10px 22px 18px;flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
+
+  h1{
+    font-size:23px;line-height:1.2;font-weight:900;
+    letter-spacing:-.5px;text-align:center;margin:0 0 20px;
+    text-wrap:balance;
+  }
+
+  .benefits{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;
+    align-items:stretch;margin-bottom:8px;
+  }
+  .benefit{
+    display:flex;align-items:center;justify-content:center;
+    padding:16px 14px;border-radius:16px;
+    background:#f7f6ff;
+    border:1px solid #ece9fb;
+  }
+  .benefit p{
+    margin:0;font-size:13.5px;font-weight:700;
+    line-height:1.34;letter-spacing:-.1px;text-align:center;
+  }
+
+  /* ---------- cta ---------- */
+  .cta-wrap{
+    position:sticky;bottom:0;margin-top:auto;
+    padding:14px 22px 20px;
+    background:linear-gradient(180deg, rgba(255,255,255,0) 0%, #fff 26%);
+  }
+  .cta{
+    width:100%;border:0;cursor:pointer;
+    padding:18px 12px;border-radius:999px;
+    background:linear-gradient(180deg,#5CB0FF 0%, #3B9EFF 100%);
+    color:#fff;font-family:inherit;font-size:17px;font-weight:900;letter-spacing:-.2px;
+    box-shadow:0 10px 24px rgba(59,158,255,.42);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .cta:active{transform:translateY(2px);box-shadow:0 5px 14px rgba(59,158,255,.38)}
+
+  /* ================= PAYMENT SCREEN ================= */
+  .payview{
+    position:absolute;inset:0;z-index:5;
+    background:#f7f8fb;
+    display:flex;flex-direction:column;
+    transform:translateX(100%);visibility:hidden;
+    transition:transform .38s cubic-bezier(.4,0,.2,1), visibility .38s;
+  }
+  .phone.paying .payview{transform:none;visibility:visible}
+  .phone.paying .back{opacity:0;pointer-events:none}
+
+  .pay-scroll{
+    flex:1;overflow-y:auto;overflow-x:hidden;
+    scrollbar-width:none;padding:56px 18px 18px;
+  }
+  .pay-scroll::-webkit-scrollbar{display:none}
+
+  .pay-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .pay-back{
+    width:34px;height:34px;flex:0 0 34px;border:0;cursor:pointer;
+    border-radius:50%;background:#eceef3;display:grid;place-items:center;
+    transition:transform .15s ease;
+  }
+  .pay-back:active{transform:scale(.9)}
+  .pay-head h2{margin:0;font-size:25px;font-weight:900;letter-spacing:-.6px}
+  .pay-sub{margin:0 0 16px;font-size:14px;font-weight:600;color:#6b7280;line-height:1.4}
+
+  .pcard{
+    background:#fff;border:1px solid #eef0f5;border-radius:16px;
+    margin-bottom:14px;overflow:hidden;
+    box-shadow:0 2px 10px rgba(60,50,110,.04);
+  }
+
+  .acc-head{
+    width:100%;background:none;border:0;cursor:pointer;font-family:inherit;
+    display:flex;align-items:center;gap:11px;
+    padding:15px 16px;text-align:left;
+  }
+  .acc-head .label{flex:1;font-size:15px;font-weight:800;letter-spacing:-.1px}
+  .acc-head .caret{
+    width:13px;height:13px;flex:0 0 13px;
+    transition:transform .28s ease;color:#3f4756;
+  }
+  .acc-head[aria-expanded="true"] .caret{transform:rotate(180deg)}
+
+  .acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+  .acc-head[aria-expanded="true"] + .acc-body{grid-template-rows:1fr}
+  .acc-inner{overflow:hidden;min-height:0}
+
+  .opt{
+    display:flex;align-items:center;gap:12px;
+    padding:14px 16px;margin:0 0 0 16px;cursor:pointer;
+    border-top:1px solid #eef0f5;
+  }
+  .opt:first-child{border-top:1px solid #eef0f5}
+  .opt .name{flex:1;font-size:15px;font-weight:800}
+  .opt input{position:absolute;opacity:0;pointer-events:none}
+  .opt .radio{
+    width:21px;height:21px;flex:0 0 21px;border-radius:50%;
+    border:1.6px solid #cfd5df;margin-right:16px;
+    display:grid;place-items:center;transition:border-color .2s ease;
+  }
+  .opt .radio::after{
+    content:"";width:11px;height:11px;border-radius:50%;
+    background:#3B9EFF;transform:scale(0);transition:transform .2s ease;
+  }
+  .opt input:checked + .radio{border-color:#3B9EFF}
+  .opt input:checked + .radio::after{transform:scale(1)}
+
+  .cardform{padding:4px 16px 16px;display:grid;gap:10px}
+  .cardform input{
+    width:100%;font-family:inherit;font-size:14.5px;font-weight:700;
+    padding:13px 14px;border-radius:12px;border:1px solid #e6e9f0;
+    background:#fafbfd;color:var(--ink);
+  }
+  .cardform input::placeholder{color:#a8b0bd;font-weight:600}
+  .cardform input:focus{outline:0;border-color:#3B9EFF;background:#fff}
+  .cardform .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  .coupon{padding:16px}
+  .coupon h3{margin:0 0 5px;font-size:15.5px;font-weight:900;letter-spacing:-.2px}
+  .coupon p{margin:0 0 13px;font-size:13px;font-weight:600;color:#6b7280;line-height:1.4}
+  .coupon input{
+    width:100%;font-family:inherit;font-size:15px;font-weight:700;
+    padding:15px 16px;border-radius:13px;border:1px solid #e6e9f0;
+    background:#fff;color:var(--ink);
+  }
+  .coupon input::placeholder{color:#b0b7c3;font-weight:600}
+  .coupon input:focus{outline:0;border-color:#3B9EFF}
+
+  .paybar{
+    flex:0 0 auto;display:flex;align-items:center;gap:14px;
+    padding:14px 18px 16px;background:#fff;
+    border-top:1px solid #eef0f5;
+    box-shadow:0 -6px 20px rgba(60,50,110,.06);
+  }
+  .paybar .amt{flex:1;font-size:21px;font-weight:900;letter-spacing:-.5px}
+  .paynow{
+    flex:0 0 auto;min-width:172px;border:0;cursor:pointer;font-family:inherit;
+    padding:15px 26px;border-radius:999px;
+    background:linear-gradient(180deg,#5CB0FF 0%, #3B9EFF 100%);
+    color:#fff;font-size:16px;font-weight:900;letter-spacing:-.2px;
+    box-shadow:0 8px 18px rgba(59,158,255,.38);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .paynow:active{transform:translateY(2px);box-shadow:0 4px 10px rgba(59,158,255,.34)}
+
+
+  /* ---------- payment success modal ---------- */
+  .modal{
+    position:absolute;inset:0;z-index:9;
+    display:grid;place-items:center;padding:0 22px;
+    background:rgba(22,24,32,.55);
+    opacity:0;visibility:hidden;
+    transition:opacity .26s ease, visibility .26s;
+  }
+  .phone.done .modal{opacity:1;visibility:visible}
+  .modal-card{
+    width:100%;background:#fff;border-radius:22px;
+    padding:26px 22px 24px;text-align:center;
+    box-shadow:0 22px 50px rgba(0,0,0,.28);
+    transform:scale(.88);
+    transition:transform .32s cubic-bezier(.2,.9,.3,1.25);
+  }
+  .phone.done .modal-card{transform:none}
+  .modal-card h3{margin:14px 0 7px;font-size:23px;font-weight:900;letter-spacing:-.6px}
+  .modal-card p{margin:0;font-size:13.5px;font-weight:600;color:#6b7280;line-height:1.4}
+
+  .homebar{
+    height:5px;width:134px;border-radius:99px;background:#1a1a22;
+    margin:6px auto 8px;flex:0 0 auto;
+  }
+
+  /* float animation for the hero art */
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+  #kid{animation:bob 4s ease-in-out infinite;transform-origin:center}
+  .star{animation:twinkle 2.6s ease-in-out infinite}
+  .star:nth-of-type(2){animation-delay:.7s}
+  .star:nth-of-type(3){animation-delay:1.4s}
+
+  @media (prefers-reduced-motion:reduce){
+    #kid,.star{animation:none}
+  }
+
+  /* on an actual phone, go full-bleed */
+  @media (max-width:430px){
+    body{padding:0;align-items:stretch;background:#fff}
+    .phone{max-width:none;height:100vh;height:100dvh;border:0;border-radius:0;box-shadow:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="topscrim"></div>
+  <div class="notch"></div>
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="status-icons">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 11.2 6.1 9.2a2.7 2.7 0 0 1 3.8 0L8 11.2Zm0-4.6a5.2 5.2 0 0 0-3.7 1.5L3 6.8a7 7 0 0 1 10 0l-1.3 1.3A5.2 5.2 0 0 0 8 6.6Zm0-3.8a9 9 0 0 0-6.4 2.6L.3 4.2a10.8 10.8 0 0 1 15.4 0l-1.3 1.2A9 9 0 0 0 8 2.8Z"/></svg>
+      <svg width="26" height="12" viewBox="0 0 26 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3.2" fill="none" stroke="currentColor" opacity=".45"/><rect x="2" y="2" width="19" height="8" rx="2" fill="currentColor"/><path d="M24 4v4a2.1 2.1 0 0 0 0-4Z" fill="currentColor" opacity=".45"/></svg>
+    </span>
+  </div>
+
+  <button class="back" aria-label="Go back">
+    <svg width="11" height="18" viewBox="0 0 11 18" fill="none" stroke="#12121a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 1.5 2 9l7.5 7.5"/></svg>
+  </button>
+
+  <div class="screen">
+
+    <!-- ================= HERO ART ================= -->
+    <div class="hero">
+      <div class="slider" id="slider">
+        <div class="track" id="track">
+          <div class="slide">
+            <img src="images/slide-1.jpg" alt="Quiz performance report" draggable="false">
+          </div>
+          <div class="slide">
+            <img src="images/slide-2.jpg" alt="Badges and mastery rings earned" draggable="false">
+          </div>
+          <div class="slide">
+            <img src="images/slide-3.jpg" alt="Weekly learning road with milestones" draggable="false">
+          </div>
+          <div class="slide">
+            <img src="images/slide-4.jpg" alt="Breakdown of topics played" draggable="false">
+          </div>
+        </div>
+      </div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <!-- ================= CONTENT ================= -->
+    <div class="content">
+      <h1>Unlock Your Child's Potential</h1>
+
+      <div class="benefits">
+        <div class="benefit">
+          <p>Detailed Performance Tracking &amp; Snapshots</p>
+        </div>
+        <div class="benefit">
+          <p>Custom Weekly Learning Roads &amp; Milestones</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-wrap">
+      <button class="cta" id="cta">Unlock Everything for Just ₹9</button>
+    </div>
+  </div>
+
+
+  <!-- ================= PAYMENT SCREEN ================= -->
+  <div class="payview" id="payview" aria-hidden="true">
+    <div class="pay-scroll">
+
+      <div class="pay-head">
+        <button class="pay-back" id="payBack" aria-label="Back">
+          <svg width="9" height="15" viewBox="0 0 11 18" fill="none" stroke="#12121a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 1.5 2 9l7.5 7.5"/></svg>
+        </button>
+        <h2>Payment</h2>
+      </div>
+      <p class="pay-sub">Choose your preferred payment method to complete your payment</p>
+
+      <!-- UPI -->
+      <section class="pcard">
+        <button class="acc-head" aria-expanded="true">
+          <svg width="17" height="19" viewBox="0 0 20 22" aria-hidden="true">
+            <path d="M13 0 20 11l-7 11-2.4-3.8L15 11 10.6 3.8 13 0Z" fill="#0E8F45"/>
+            <path d="M7 0l7 11-7 11-2.4-3.8L9 11 4.6 3.8 7 0Z" fill="#E8752A"/>
+          </svg>
+          <span class="label">UPI</span>
+          <svg class="caret" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)"><path d="M1 1.5 6 6.5l5-5"/></svg>
+        </button>
+        <div class="acc-body"><div class="acc-inner">
+          <label class="opt">
+            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4.5 8.6a4.6 4.6 0 0 1 6.5 0l4.4 4.4a4.6 4.6 0 0 1-6.5 6.5L4.5 15a4.6 4.6 0 0 1 0-6.4Z" fill="#4285F4"/>
+              <path d="M9.4 4.3a4.6 4.6 0 0 1 6.5 6.5l-4.4 4.4a4.6 4.6 0 0 1-6.5-6.5l4.4-4.4Z" fill="#EA4335" opacity=".92"/>
+              <path d="M13.6 4.3a4.6 4.6 0 0 1 6.5 6.5l-2.2 2.2-6.5-6.5 2.2-2.2Z" fill="#FBBC04"/>
+              <path d="M11.4 15.2 15.9 19a4.6 4.6 0 0 0 3-8l-7.5 4.2Z" fill="#34A853"/>
+            </svg>
+            <span class="name">Google pay</span>
+            <input type="radio" name="pm" value="gpay"><span class="radio"></span>
+          </label>
+          <label class="opt">
+            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+              <rect width="24" height="24" rx="6" fill="#5F259F"/>
+              <path d="M17 9.1c0-.5-.4-.9-.9-.9h-1.5l-.4-1.2c-.1-.4-.5-.6-.9-.5l-.8.2c-.3.1-.5.4-.4.7l.3.8h-3.7c-1.5 0-2.7 1.2-2.7 2.7v2.4c0 1.9 1.5 3.4 3.4 3.4h.5v-4.3c0-.6.5-1.1 1.1-1.1h.9v5.4h1.9v-5.4h2.3c.5 0 .9-.4.9-.9V9.1Z" fill="#fff"/>
+            </svg>
+            <span class="name">PhonePe</span>
+            <input type="radio" name="pm" value="phonepe"><span class="radio"></span>
+          </label>
+        </div></div>
+      </section>
+
+      <!-- CARD -->
+      <section class="pcard">
+        <button class="acc-head" aria-expanded="false">
+          <svg width="19" height="15" viewBox="0 0 22 16" aria-hidden="true">
+            <rect width="22" height="16" rx="3" fill="#9AA6B8"/>
+            <rect y="4" width="22" height="3.4" fill="#3F4756"/>
+            <rect x="2.6" y="10.4" width="7" height="2.4" rx="1.2" fill="#fff" opacity=".9"/>
+          </svg>
+          <span class="label">CREDIT/DEBIT CARD</span>
+          <svg class="caret" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1.5 6 6.5l5-5"/></svg>
+        </button>
+        <div class="acc-body"><div class="acc-inner">
+          <div class="cardform">
+            <input type="text" inputmode="numeric" placeholder="Card number" autocomplete="off">
+            <div class="two">
+              <input type="text" placeholder="MM / YY" autocomplete="off">
+              <input type="text" inputmode="numeric" placeholder="CVV" autocomplete="off">
+            </div>
+            <input type="text" placeholder="Name on card" autocomplete="off">
+          </div>
+        </div></div>
+      </section>
+
+      <!-- COUPON -->
+      <section class="pcard coupon">
+        <h3>Have a Coupon?</h3>
+        <p>Enter your coupon code to unlock your discount before you continue.</p>
+        <input type="text" placeholder="Enter Coupon Code" autocomplete="off">
+      </section>
+
+    </div>
+
+    <div class="paybar">
+      <span class="amt">₹9</span>
+      <button class="paynow">Pay Now</button>
+    </div>
+  </div>
+
+
+  <!-- ================= SUCCESS MODAL ================= -->
+  <div class="modal" id="successModal" role="dialog" aria-modal="true"
+       aria-labelledby="successTitle" aria-hidden="true">
+    <div class="modal-card">
+      <svg width="92" height="70" viewBox="0 0 92 70" aria-hidden="true">
+        <rect x="20" y="14" width="52" height="9" rx="4.5" fill="#8FD9BF"/>
+        <rect x="16.5" y="21.5" width="49" height="33" rx="6"
+              fill="#fff" stroke="#2B2F3A" stroke-width="2.6"/>
+        <rect x="22" y="43" width="13" height="5" rx="2.5" fill="#2B2F3A"/>
+        <circle cx="63" cy="44" r="13.5" fill="#fff" stroke="#7FD4B4" stroke-width="2.6"/>
+        <path d="M57 44.2l4 4 8.5-8.6" fill="none" stroke="#5FC79E"
+              stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <g stroke="#8FD9BF" stroke-width="2.2" stroke-linecap="round">
+          <path d="M78 30.5l4-1.5"/><path d="M77 37h4.5"/><path d="M78.5 43.5l4 1.5"/>
+        </g>
+      </svg>
+      <h3 id="successTitle">Payment Successful</h3>
+      <p>Your transaction was completed successfully.</p>
+    </div>
+  </div>
+
+  <div class="homebar"></div>
+</div>
+
+<script>
+  /* ---- auto-advancing slider ---- */
+  const track  = document.getElementById('track');
+  const slider = document.getElementById('slider');
+  const dotBox = document.getElementById('dots');
+  const count  = track.children.length;
+  let idx = 0, timer = null;
+  const DELAY = 3400;
+
+  for (let i = 0; i < count; i++) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    b.addEventListener('click', () => { go(i); restart(); });
+    dotBox.appendChild(b);
+  }
+
+  function go(i){
+    idx = (i + count) % count;
+    track.style.transform = 'translateX(' + (-idx * 100) + '%)';
+    [...dotBox.children].forEach((d, n) => d.classList.toggle('on', n === idx));
+  }
+  const start   = () => timer = setInterval(() => go(idx + 1), DELAY);
+  const stop    = () => clearInterval(timer);
+  const restart = () => { stop(); start(); };
+
+  /* keeps sliding on its own; only a real drag or a hidden tab pauses it */
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : restart());
+
+  /* swipe */
+  let x0 = null;
+  slider.addEventListener('pointerdown', e => { x0 = e.clientX; stop(); });
+  slider.addEventListener('pointerup', e => {
+    if (x0 === null) return;
+    const dx = e.clientX - x0;
+    if (Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1));
+    x0 = null; restart();
+  });
+
+  go(0); start();
+
+  const screenEl = document.querySelector('.screen');
+  const phoneEl  = document.querySelector('.phone');
+  screenEl.addEventListener('scroll', () => {
+    phoneEl.classList.toggle('scrolled', screenEl.scrollTop > 16);
+  }, {passive:true});
+
+
+  /* ---- paywall -> payment screen ---- */
+  const payview = document.getElementById('payview');
+  function openPay(){
+    phoneEl.classList.add('paying');
+    payview.setAttribute('aria-hidden','false');
+    stop();                                  /* slider rests while hidden */
+  }
+  function closePay(){
+    phoneEl.classList.remove('paying');
+    payview.setAttribute('aria-hidden','true');
+    restart();
+  }
+  document.getElementById('cta').addEventListener('click', openPay);
+  document.getElementById('payBack').addEventListener('click', closePay);
+
+  /* accordions */
+  document.querySelectorAll('.acc-head').forEach(h => {
+    h.addEventListener('click', () => {
+      const open = h.getAttribute('aria-expanded') === 'true';
+      h.setAttribute('aria-expanded', String(!open));
+    });
+  });
+
+
+  /* ---- Pay Now -> success ---- */
+  const successModal = document.getElementById('successModal');
+  document.querySelector('.paynow').addEventListener('click', () => {
+    phoneEl.classList.add('done');
+    successModal.setAttribute('aria-hidden','false');
+  });
+  successModal.addEventListener('click', () => {
+    phoneEl.classList.remove('done');
+    successModal.setAttribute('aria-hidden','true');
+  });
+
+  document.querySelector('.back').addEventListener('click', () => history.back());
+</script>
+</body>
+</html>
